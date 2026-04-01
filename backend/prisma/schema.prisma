@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PACIENTE
+  ADMIN
+  RECEPCIONISTA
+}
+
+enum AppointmentStatus {
+  AGENDADO
+  CONCLUIDO
+  REMARCADO
+  CANCELADO
+}
+
+enum SlotStatus {
+  DISPONIVEL
+  OCUPADO
+}
+
+model User {
+  id              String        @id @default(uuid())
+  nome            String
+  email           String        @unique
+  senha           String
+  cpf             String        @unique
+  rg              String?
+  role            Role          @default(PACIENTE)
+  data_nascimento DateTime
+  telefone        String
+  endereco        String?
+  created_at      DateTime      @default(now())
+
+  appointments    Appointment[]
+}
+
+model Exam {
+  id              String          @id @default(uuid())
+  nome            String
+  descricao       String
+  preco           Float
+  duracao_minutos Int
+  created_at      DateTime        @default(now())
+
+  appointments    Appointment[]
+  slots           AvailableSlot[]
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  valor_pago  Float
+  status      AppointmentStatus @default(AGENDADO)
+  created_at  DateTime          @default(now())
+  deleted_at  DateTime?
+
+  user        User          @relation(fields: [user_id], references: [id])
+  user_id     String
+
+  exam        Exam          @relation(fields: [exam_id], references: [id])
+  exam_id     String
+
+  slot        AvailableSlot @relation(fields: [slot_id], references: [id])
+  slot_id     String        @unique
+}
+
+model AvailableSlot {
+  id          String      @id @default(uuid())
+  data_hora   DateTime
+  status      SlotStatus  @default(DISPONIVEL)
+  observacoes String?
+  created_at  DateTime    @default(now())
+
+  exam        Exam        @relation(fields: [exam_id], references: [id])
+  exam_id     String
+
+  appointment Appointment?
+}
