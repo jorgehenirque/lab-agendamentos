@@ -13,9 +13,8 @@ dotenv.config()
 
 const app = express()
 
-app.use(express.json())
 app.use(cors({
-  origin: 'https://lab-agendamentos.vercel.app/',
+  origin: ['http://localhost:5173', 'https://lab-agendamentos.vercel.app'],
   credentials: true
 }))
 app.use('/users', userRoutes)
