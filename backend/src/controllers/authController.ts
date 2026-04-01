@@ -46,9 +46,10 @@ export const register = async (req: Request, res: Response) => {
       }
     })
 
-  } catch (error) {
-    return res.status(500).json({ error: 'Erro interno do servidor' })
-  }
+} catch (error) {
+  console.error('Erro no register:', error)
+  return res.status(500).json({ error: 'Erro interno do servidor' })
+}
   
 }
 export const login = async (req: Request, res: Response) => {
